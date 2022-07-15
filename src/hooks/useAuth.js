@@ -40,8 +40,17 @@ function useAuthProvider() {
         }
     };
 
+    const logout = () => {
+        Cookie.remove("token");
+        setUserProfile(null);
+        delete axios.defaults.headers.Authorization;
+
+        window.location.href = "/login";
+    };
+
     return {
         userProfile,
         signIn,
+        logout,
     };
 }

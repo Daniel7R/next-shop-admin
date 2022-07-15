@@ -1,13 +1,18 @@
 import { XCircleIcon } from "@heroicons/react/solid";
+import { useEffect, useState } from "react";
 
 const Alert = ({ alert, handleClose }) => {
+    const [color, setColor] = useState("");
+
+    useEffect(() => {
+        setColor(alert.type === "success" ? "green-100" : "red-500");
+    }, []);
+
     if (alert && alert?.autoClose) {
         setTimeout(() => {
             handleClose();
         }, 9000);
     }
-
-    const color = alert.type === "success" ? "green-100" : "red-500";
 
     return (
         <>

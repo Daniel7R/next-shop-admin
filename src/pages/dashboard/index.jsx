@@ -1,21 +1,38 @@
 import { useState } from "react";
+import Link from "next/link";
+import { XCircleIcon } from "@heroicons/react/solid";
 
 import { useFetch } from "@hooks/useFetch";
 import endPoints from "@services/api";
 import Pagination from "@components/Pagination";
 import { Chart } from "@common/Chart";
+import { useAlert } from "@hooks/useAlert";
+import { deleteProduct } from "@services/api/product";
 
 const PRODUCTS_LIMIT = 10;
-const PRODUCS_OFFSET = 10;
+const PRODUCTS_OFFSET = 0;
 
 export default function Dashboard() {
-    const [offset, setOffset] = useState(PRODUCS_OFFSET);
+    const [offset, setOffset] = useState(PRODUCTS_OFFSET);
     const products = useFetch(endPoints.products.getAllProducts(PRODUCTS_LIMIT, offset));
 
     const categoryNames = products?.map((product) => product.category);
     const categoryCount = categoryNames?.map((category) => category.name);
 
     const countOcurrences = (arr) => arr.reduce((prev, curr) => ((prev[curr] = ++prev[curr] || 1), prev), {});
+
+    const { setAlert } = useAlert();
+
+    const handleClose = (id) => {
+        deleteProduct(id).then(() => {
+            setAlert({
+                active: true,
+                message: "Delete product successfully",
+                type: "error",
+                autoClose: true,
+            });
+        });
+    };
 
     const data = {
         datasets: [
@@ -79,14 +96,12 @@ export default function Dashboard() {
                                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">${product.price}</span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                                <Link href={`/dashboard/edit/${product.id}`} className="text-indigo-600 hover:text-indigo-900">
                                                     Edit
-                                                </a>
+                                                </Link>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <a href="#" className="text-red-400 hover:text-red-500">
-                                                    Delete
-                                                </a>
+                                                <XCircleIcon className="flex-shrink-0 h-6 w-6 text-red-400 cursor-pointer" aria-hidden="true" onClick={() => handleClose(product.id)} />
                                             </td>
                                         </tr>
                                     ))}

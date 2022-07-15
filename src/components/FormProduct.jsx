@@ -1,9 +1,13 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useRef } from "react";
+import { useRouter } from "next/router";
 
-import { addProduct } from "@services/api/product";
+import { addProduct, updateProduct } from "@services/api/product";
 
-export default function FormProduct({ setOpen, setAlert }) {
+export default function FormProduct({ setOpen, setAlert, product }) {
     const formRef = useRef(null);
+
+    const router = useRouter();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,15 +20,21 @@ export default function FormProduct({ setOpen, setAlert }) {
             images: [formData.get("images").name],
         };
         try {
-            addProduct(data).then(() => {
-                setAlert({
-                    active: true,
-                    message: "Product added successfully",
-                    type: "success",
-                    autoClose: false,
+            if (product) {
+                updateProduct(product.id, data).then(() => {
+                    router.push("/dashboard/products");
                 });
-                setOpen(false);
-            });
+            } else {
+                addProduct(data).then(() => {
+                    setAlert({
+                        active: true,
+                        message: "Product added successfully",
+                        type: "success",
+                        autoClose: false,
+                    });
+                    setOpen(false);
+                });
+            }
         } catch (e) {
             setAlert({
                 active: true,
@@ -49,6 +59,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                                 type="text"
                                 name="title"
                                 id="title"
+                                defaultValue={product?.title}
                                 required
                                 className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                             />
@@ -60,6 +71,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                             <input
                                 type="number"
                                 name="price"
+                                defaultValue={product?.price}
                                 required
                                 id="price"
                                 className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -71,6 +83,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                             </label>
                             <select
                                 id="category"
+                                defaultValue={product?.category}
                                 name="category"
                                 autoComplete="category-name"
                                 required
@@ -92,6 +105,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                                 name="description"
                                 id="description"
                                 autoComplete="description"
+                                defaultValue={product?.description}
                                 rows="3"
                                 required
                                 className="form-textarea mt-1 block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -116,7 +130,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                                                 className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                                             >
                                                 <span>Upload a file</span>
-                                                <input id="images" name="images" type="file" required className="sr-only" />
+                                                <input id="images" name="images" type="file" defaultValue={product?.images} className="sr-only" />
                                             </label>
                                             <p className="pl-1">or drag and drop</p>
                                         </div>

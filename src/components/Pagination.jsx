@@ -1,6 +1,6 @@
 export default function Pagination({ offset, setOffset }) {
     const handlePrev = () => {
-        if (offset <= 19) return;
+        if (offset <= 10) return;
         setOffset(offset - 10);
     };
 
