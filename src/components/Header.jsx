@@ -27,7 +27,6 @@ export default function Header() {
         email: auth?.userProfile?.email,
         imageUrl: auth?.userProfile?.avatar,
     };
-    console.log(userData)
 
     return (
         <>
